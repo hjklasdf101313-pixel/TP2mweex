@@ -16,8 +16,8 @@ def webhook():
     data = request.json
     
     if data.get('action') == 'entry':
-        symbol_tv = data.get('symbol') # contoh: BTCUSD
-        symbol = symbol_tv.replace("USD", "/USDT") # jadi BTC/USDT
+        symbol_tv = data.get('symbol')
+        symbol = symbol_tv.replace("USD", "/USDT")
         
         try:
             # 1. SET LEVERAGE 400x
@@ -26,7 +26,7 @@ def webhook():
             # 2. HITUNG 0.1% DARI BALANCE
             balance = exchange.fetch_balance()
             usdt_balance = balance['USDT']['free']
-            amount_usdt = usdt_balance * 0.001  # 0.1%
+            amount_usdt = usdt_balance * 0.01
             
             # 3. DAPATIN HARGA & HITUNG QTY
             ticker = exchange.fetch_ticker(symbol)
@@ -39,7 +39,7 @@ def webhook():
             
             # 5. SET TP 400% 
             entry_price = order['average']
-            tp_price = entry_price * 0.96 # short TP kalau naik 1% = 400% profit
+            tp_price = entry_price * 0.99
             tp_price = exchange.price_to_precision(symbol, tp_price)
             
             exchange.create_limit_sell_order(symbol, qty, tp_price)
